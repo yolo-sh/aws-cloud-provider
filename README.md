@@ -117,7 +117,7 @@ t2.medium, m6g.large, a1.xlarge, c5.12xlarge...
 
 ## Infrastructure lifecycle
 
-![infra](https://user-images.githubusercontent.com/1233275/172016026-3f395073-e198-4c99-8bfc-d570ae5f6c35.png)
+![infra](https://user-images.githubusercontent.com/1233275/187925670-e06790b5-0084-4d91-a18e-160c771b4f4a.png)
 
 The schema above describe all the components that may be created in your AWS account. The next sections will describe their lifetime according to your use of the Yolo CLI.
 

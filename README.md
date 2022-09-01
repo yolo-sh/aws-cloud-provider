@@ -75,7 +75,13 @@ Use "yolo aws [command] --help" for more information about a command.
 
 ### Authentication
 
-In order to access your AWS account, the Yolo CLI will first look for credentials in the `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_REGION` environment variables.
+In order to access your AWS account, the Yolo CLI will first look for credentials in the following environment variables:
+
+- `AWS_ACCESS_KEY_ID`
+
+- `AWS_SECRET_ACCESS_KEY`
+
+- `AWS_REGION`
 
 If not found, the configuration files created by the AWS CLI (via `aws configure`) will be used.
 

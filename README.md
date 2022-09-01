@@ -233,11 +233,11 @@ In other words:
 
 ## Infrastructure costs
 
-The costs of running a environment on AWS are essentially equal to the costs of the `EC2` instance and the `EBS` volume:
+The costs of running an environment on AWS are essentially equal to the costs of the `EC2` instance and the `EBS` volume:
 
 - For the `EC2` instance, the price depends on the instance type chosen.
 
-- For the `EBS` volume, Yolo uses the `General Purpose SSD (gp2) Volumes` that will cost you ~$0.10 per GB-month.
+- For the `EBS` volume, Yolo uses the `General Purpose SSD (gp2)` type that will cost you ~$0.10 per GB-month.
 
 All other components are free (or mostly free) given their limited usage.
 

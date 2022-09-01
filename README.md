@@ -39,7 +39,7 @@ To begin, create your first environment using the command:
 
   yolo aws init <repository>
 
-Once initialized, you may want to connect to it, using the command: 
+Once initialized, you may want to connect to it using the command: 
 
   yolo aws edit <repository>
 
@@ -79,7 +79,7 @@ In order to access your AWS account, the Yolo CLI will first look for credential
 
 If not found, the configuration files created by the AWS CLI (via `aws configure`) will be used.
 
-#### `--profile`
+#### --profile
 
 If you have configured the AWS CLI with multiple configuration profiles, you could tell Yolo which one to use via the `--profile` flag:
 
@@ -89,7 +89,7 @@ yolo aws --profile production init yolo-sh/api
 
 **By default, Yolo will use the profile named `default`.**
 
-#### `--region`
+#### --region
 
 If you want to overwrite the region resolved by the Yolo CLI, you could use the `--region` flag:
 
@@ -107,7 +107,7 @@ Your credentials must have certain permissions attached to be used with Yolo. Se
 
 ### Authorized instance types
 
-To be used with Yolo, the chosen instance must be <ins>**an `on-demand` `linux instance` with `EBS` support running on an `amd64` or `arm64` architecture**</ins>.
+To be used with Yolo, the chosen instance must be **an on-demand linux instance with EBS support running on an amd64 or arm64 architecture**.
 
 #### Examples
 
@@ -129,9 +129,9 @@ The schema above describe all the components that may be created in your AWS acc
 yolo aws init yolo-sh/api --instance-type t2.medium
 ```
 
-A DynamoDB table named `yolo-config-dynamodb-table` will be created. This table will be used to store the state of the infrastructure.
+A DynamoDB table named `yolo-config-dynamodb-table` will be created. This table will be used to store the state of the Yolo's infrastructure.
 
-Once created, all the following components will be created:
+Once created, all the following components will also be created:
 
 - A `VPC` named `yolo-vpc` with an IPv4 CIDR block equals to `10.0.0.0/16` to isolate your infrastructure.
 
@@ -141,25 +141,21 @@ Once created, all the following components will be created:
 
 - A `route table` named `yolo-route-table` that will allow egress traffic from your your environments' instances to the internet (via the internet gateway).
 
-#### On each initialization
+#### On each init
 
-What will be done when running the `init` command will depend on the state of the environment that you want to init:
+When running the `init` command, the following components will be created:
 
-- If the environment doesn't exist, the following components will be created:
+- A `security group` named `yolo-${ENV_NAME}-security-group` to let your environment accepts `SSH` connections on port `2200`.
 
-    - A `security group` named `yolo-${DEV_ENV_NAME}-security-group` to let your environment accepts `SSH` connections on port `2200`.
+- An `SSH key pair` named `yolo-${ENV_NAME}-key-pair` to let you access your environment via `SSH`.
 
-    - An `SSH key pair` named `yolo-${DEV_ENV_NAME}-key-pair` to let you access your environment via `SSH`.
+- A `network interface` named `yolo-${ENV_NAME}-network-interface` to enable network connectivity in your environment.
 
-    - A `network interface` named `yolo-${DEV_ENV_NAME}-network-interface` to enable network connectivity in your environment.
+- An `Elastic IP` named `yolo-${ENV_NAME}-elastic-ip` to let you access your environment via a fixed public IP.
 
-    - An `Elastic IP` named `yolo-${DEV_ENV_NAME}-elastic-ip` to let you access your environment via a fixed public IP.
-
-    - An `EC2 instance` named `yolo-${DEV_ENV_NAME}-instance` with a type equals to the one passed via the `--instance-type` flag or `t2.medium` by default.
+- An `EC2 instance` named `yolo-${ENV_NAME}-instance` with a type equals to the one passed via the `--instance-type` flag or `t2.medium` by default.
     
-    - An `EBS volume` attached to the instance (default to `16GB`) to provide long-term storage to your environment.
- 
- - If the environment already exists, nothing will be done.
+- An `EBS volume` attached to the instance (default to `16GB`) to provide long-term storage to your environment.
 
 ### Edit
 
@@ -177,7 +173,7 @@ yolo aws open-port yolo-sh/api 8080
 
 When running the `open-port` command, an `ingress` rule will be added to the `security group` of the environment. 
 
-This rule will allow all `TCP` trafic from any `IP` address to the specified port.
+This rule will allow all `TCP` trafic from `any IP address` to the specified port.
 
 ### Close port
 
@@ -193,7 +189,9 @@ When running the `close-port` command, the `ingress` rule added by the `open-por
 yolo aws remove yolo-sh/api
 ```
 
-When running the `remove` command, all the components associated with the environment will be removed:
+When running the `remove` command, all the components associated with the environment will be removed.
+
+In other words:
 
 - The `EC2 instance`.
 
@@ -213,7 +211,9 @@ When running the `remove` command, all the components associated with the enviro
 yolo aws uninstall
 ```
 
-When running the `uninstall` command, all the shared components will be removed:
+When running the `uninstall` command, all the shared components will be removed. 
+
+In other words:
 
 - The `route table`.
 

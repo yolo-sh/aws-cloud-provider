@@ -83,7 +83,7 @@ In order to access your AWS account, the Yolo CLI will first look for credential
 
 - `AWS_REGION`
 
-If not found, the configuration files created by the AWS CLI (via `aws configure`) will be used.
+Otherwise, the configuration files created by the AWS CLI (via `aws configure`) will be used.
 
 #### --profile
 

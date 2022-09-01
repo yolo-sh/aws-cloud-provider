@@ -113,7 +113,7 @@ Your credentials must have certain permissions attached to be used with Yolo. Se
 
 ### Authorized instance types
 
-To be used with Yolo, the chosen instance must be **an on-demand linux instance with EBS support running on an amd64 or arm64 architecture**.
+To be used with Yolo, the chosen instance must be **an on-demand linux instance (with EBS support) running on an amd64 or arm64 architecture**.
 
 #### Examples
 

@@ -34,8 +34,6 @@ yolo aws --profile production --region eu-west-3 init yolo-sh/api
 ## Usage
 
 ```console
-Use Yolo on Amazon Web Services.
-	
 To begin, create your first environment using the command:
 
   yolo aws init <repository>

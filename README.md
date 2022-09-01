@@ -10,8 +10,9 @@
 ```bash
 yolo aws init yolo-sh/api --instance-type t2.medium
 ```
-
-<img width="1136" alt="vscode" src="https://user-images.githubusercontent.com/1233275/172016056-81e9345d-fd4e-43dd-adab-0648dcb457ef.png">
+<p align="center">
+  <img width="759" src="https://user-images.githubusercontent.com/1233275/187968190-0ce41e41-4612-486e-bc3d-64f03fc25ac5.png" alt="Example of use of the Yolo CLI" />
+</p>
 
 ## Table of contents
 - [Usage](#usage)

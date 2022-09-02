@@ -21,7 +21,7 @@ yolo aws --profile production --region eu-west-3 init yolo-sh/api
         - [--region](#--region)
     - [Permissions](#permissions)
     - [Authorized instance types](#authorized-instance-types)
-- [Infrastructure lifecycle](#infrastructure-lifecycle)
+- [Infrastructure components](#infrastructure-components)
     - [Init](#init)
     - [Edit](#edit)
     - [Open port](#open-port)
@@ -82,7 +82,7 @@ In order to access your AWS account, the Yolo CLI will first look for credential
 
 - `AWS_REGION`
 
-Otherwise, the configuration files created by the AWS CLI (via `aws configure`) will be used.
+If not found, the configuration files created by the AWS CLI (via `aws configure`) will be used.
 
 #### --profile
 
@@ -120,7 +120,7 @@ To be used with Yolo, the chosen instance must be **an on-demand linux instance 
 t2.medium, m6g.large, a1.xlarge, c5.12xlarge...
 ```
 
-## Infrastructure lifecycle
+## Infrastructure components
 
 ![infra](https://user-images.githubusercontent.com/1233275/187925670-e06790b5-0084-4d91-a18e-160c771b4f4a.png)
 
@@ -128,11 +128,11 @@ The schema above describe all the components that may be created in your AWS acc
 
 ### Init
 
-#### The first time Yolo is used in a region
-
 ```bash
 yolo aws init yolo-sh/api --instance-type t2.medium
 ```
+
+#### The first time Yolo is used in a region
 
 A DynamoDB table named `yolo-config-dynamodb-table` will be created. This table will be used to store the state of the Yolo's infrastructure.
 
@@ -148,7 +148,7 @@ Once created, all the following components will also be created:
 
 #### On each init
 
-When running the `init` command, the following components will be created:
+Each time the `init` command is run for a new environment, the following components will be created:
 
 - A `security group` named `yolo-${ENV_NAME}-security-group` to let your environment accepts `SSH` connections on port `2200`.
 

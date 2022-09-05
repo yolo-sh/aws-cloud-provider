@@ -147,7 +147,7 @@ EOF
 
 log "Installing the yolo agent"
 
-YOLO_AGENT_VERSION="0.0.3"
+YOLO_AGENT_VERSION="0.0.4"
 YOLO_AGENT_TMP_ARCHIVE_PATH="/tmp/yolo-agent.tar.gz"
 YOLO_AGENT_NAME="yolo_agent"
 YOLO_AGENT_DIR="/usr/local/bin"

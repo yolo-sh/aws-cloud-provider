@@ -63,6 +63,12 @@ handleExit () {
 
 trap "handleExit" EXIT
 
+# -- System configuration
+
+# Allow users to bind to all ports
+echo "net.ipv4.ip_unprivileged_port_start=0" >> /etc/sysctl.conf
+sysctl --system
+
 # Lookup instance architecture for the yolo agent
 INSTANCE_ARCH=""
 case $(uname -m) in

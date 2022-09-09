@@ -158,7 +158,7 @@ Each time the `init` command is run for a new environment, the following compone
 
 - An `Elastic IP` named `yolo-${ENV_NAME}-elastic-ip` to let you access your environment via a fixed public IP.
 
-- An `EC2 instance` named `yolo-${ENV_NAME}-instance` with a type equals to the one passed via the `--instance-type` flag or `t2.medium` by default.
+- An `EC2 instance` named `yolo-${ENV_NAME}-instance` with a type equals to the one passed via the `--instance-type` flag **or `t2.medium` by default**.
     
 - An `EBS volume` attached to the instance (default to `16GB`) to provide long-term storage to your environment.
 

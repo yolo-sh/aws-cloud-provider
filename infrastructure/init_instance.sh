@@ -152,7 +152,7 @@ EOF
 
 log "Installing the yolo agent"
 
-YOLO_AGENT_VERSION="0.0.7"
+YOLO_AGENT_VERSION="0.0.8"
 YOLO_AGENT_TMP_ARCHIVE_PATH="/tmp/yolo-agent.tar.gz"
 YOLO_AGENT_NAME="yolo-agent"
 YOLO_AGENT_DIR="/usr/local/bin"
@@ -160,11 +160,11 @@ YOLO_AGENT_PATH="${YOLO_AGENT_DIR}/${YOLO_AGENT_NAME}"
 YOLO_AGENT_SYSTEMD_SERVICE_NAME="yolo-agent.service"
 
 if [[ ! -f "${YOLO_AGENT_PATH}" ]]; then
-  curl --fail --silent --show-error --location --header "Accept: application/octet-stream" https://api.github.com/repos/yolo-sh/agent/releases/assets/77939680 --output "${YOLO_AGENT_PATH}"
-  # rm --recursive --force "${YOLO_AGENT_TMP_ARCHIVE_PATH}"
-  # curl --fail --silent --show-error --location --header "Accept: application/octet-stream" "https://github.com/yolo-sh/agent/releases/download/v${YOLO_AGENT_VERSION}/agent_${YOLO_AGENT_VERSION}_linux_${INSTANCE_ARCH}.tar.gz" --output "${YOLO_AGENT_TMP_ARCHIVE_PATH}"
-  # tar --directory "${YOLO_AGENT_DIR}" --extract --file "${YOLO_AGENT_TMP_ARCHIVE_PATH}"
-  # rm --recursive --force "${YOLO_AGENT_TMP_ARCHIVE_PATH}"
+  #curl --fail --silent --show-error --location --header "Accept: application/octet-stream" https://api.github.com/repos/yolo-sh/agent/releases/assets/77939680 --output "${YOLO_AGENT_PATH}"
+  rm --recursive --force "${YOLO_AGENT_TMP_ARCHIVE_PATH}"
+  curl --fail --silent --show-error --location --header "Accept: application/octet-stream" "https://github.com/yolo-sh/agent/releases/download/v${YOLO_AGENT_VERSION}/agent_${YOLO_AGENT_VERSION}_linux_${INSTANCE_ARCH}.tar.gz" --output "${YOLO_AGENT_TMP_ARCHIVE_PATH}"
+  tar --directory "${YOLO_AGENT_DIR}" --extract --file "${YOLO_AGENT_TMP_ARCHIVE_PATH}"
+  rm --recursive --force "${YOLO_AGENT_TMP_ARCHIVE_PATH}"
 fi
 
 chmod +x "${YOLO_AGENT_PATH}"

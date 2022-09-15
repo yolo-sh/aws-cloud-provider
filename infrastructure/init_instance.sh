@@ -38,8 +38,8 @@ constructExitJSONResponse () {
   echo "${JSON_RESPONSE}"
 }
 
-YOLO_SSH_SERVER_HOST_KEY_FILE_PATH="/home/yolo/.ssh/yolo_ssh_server_host_key.pub"
-YOLO_INIT_RESULTS_FILE_PATH="/tmp/yolo_init_results"
+YOLO_SSH_SERVER_HOST_KEY_FILE_PATH="/home/yolo/.ssh/yolo-ssh-server-host-key.pub"
+YOLO_INIT_RESULTS_FILE_PATH="/tmp/yolo-init-results"
 
 handleExit () {
   EXIT_CODE=$?
@@ -65,10 +65,6 @@ trap "handleExit" EXIT
 
 # -- System configuration
 
-# Allow users to bind to all ports
-echo "net.ipv4.ip_unprivileged_port_start=0" >> /etc/sysctl.conf
-sysctl --system
-
 # Lookup instance architecture for the yolo agent
 INSTANCE_ARCH=""
 case $(uname -m) in
@@ -86,26 +82,35 @@ esac
 
 log "Creating user \"yolo\""
 
-YOLO_USER_HOME_DIR="/home/yolo"
-YOLO_USER_WORKSPACE_DIR="${YOLO_USER_HOME_DIR}/workspace"
-YOLO_USER_WORKSPACE_CONFIG_DIR="${YOLO_USER_HOME_DIR}/.workspace-config"
+YOLO_CONFIG_DIR="/yolo-config"
+YOLO_WORKSPACE_CONFIG_DIR="${YOLO_CONFIG_DIR}/workspace"
 
+YOLO_USER_HOME_DIR="/home/yolo"
+
+# Fixed gid because the yolo group is shared with container
 groupadd --gid 10000 --force yolo
-id -u yolo >/dev/null 2>&1 || useradd --gid yolo --uid 10000 --home "${YOLO_USER_HOME_DIR}" --create-home --shell /bin/bash yolo
+id -u yolo >/dev/null 2>&1 || useradd --gid yolo --home "${YOLO_USER_HOME_DIR}" --create-home --shell /bin/bash yolo
 
 # Let the user "yolo" and the yolo agent
 # run docker commands without "sudo".
 # See https://docs.docker.com/engine/install/linux-postinstall/
-groupadd --gid 10001 --force docker
+groupadd --force docker
 usermod --append --groups docker yolo
 
 if [[ ! -f "/etc/sudoers.d/yolo" ]]; then
   echo "yolo ALL=(ALL) NOPASSWD:ALL" | tee /etc/sudoers.d/yolo > /dev/null
 fi
 
-mkdir --parents "${YOLO_USER_WORKSPACE_DIR}"
-mkdir --parents "${YOLO_USER_WORKSPACE_CONFIG_DIR}"
+mkdir --parents "${YOLO_CONFIG_DIR}"
+mkdir --parents "${YOLO_WORKSPACE_CONFIG_DIR}"
+
+chown --recursive yolo:yolo "${YOLO_CONFIG_DIR}"
 chown --recursive yolo:yolo "${YOLO_USER_HOME_DIR}"
+
+# Make sure that the user "yolo" in container
+# (that share the same gid than the one in host)
+# can write config folders
+chmod --recursive 770 "${YOLO_CONFIG_DIR}"
 
 log "Configuring home directory for user \"yolo\""
 
@@ -122,12 +127,12 @@ bash << 'EOF'
 mkdir --parents .ssh
 chmod 700 .ssh
 
-if [[ ! -f ".ssh/yolo_ssh_server_host_key" ]]; then
-  ssh-keygen -t ed25519 -f .ssh/yolo_ssh_server_host_key -q -N ""
+if [[ ! -f ".ssh/yolo-ssh-server-host-key" ]]; then
+  ssh-keygen -t ed25519 -f .ssh/yolo-ssh-server-host-key -q -N ""
 fi
 
-chmod 644 .ssh/yolo_ssh_server_host_key.pub
-chmod 600 .ssh/yolo_ssh_server_host_key
+chmod 644 .ssh/yolo-ssh-server-host-key.pub
+chmod 600 .ssh/yolo-ssh-server-host-key
 
 if [[ ! -f ".ssh/authorized_keys" ]]; then
   echo "${INSTANCE_SSH_PUBLIC_KEY}" >> .ssh/authorized_keys
@@ -139,7 +144,7 @@ EOF
 
 # -- Install the yolo agent
 #
-# /!\ the SSH server host key ("yolo_ssh_server_host_key") 
+# /!\ the SSH server host key ("yolo-ssh-server-host-key")
 #     needs to be generated. See above.
 #
 # /!\ the user "yolo" needs to be able to access 
@@ -149,17 +154,17 @@ log "Installing the yolo agent"
 
 YOLO_AGENT_VERSION="0.0.7"
 YOLO_AGENT_TMP_ARCHIVE_PATH="/tmp/yolo-agent.tar.gz"
-YOLO_AGENT_NAME="yolo_agent"
+YOLO_AGENT_NAME="yolo-agent"
 YOLO_AGENT_DIR="/usr/local/bin"
 YOLO_AGENT_PATH="${YOLO_AGENT_DIR}/${YOLO_AGENT_NAME}"
-YOLO_AGENT_SYSTEMD_SERVICE_NAME="yolo_agent.service"
+YOLO_AGENT_SYSTEMD_SERVICE_NAME="yolo-agent.service"
 
 if [[ ! -f "${YOLO_AGENT_PATH}" ]]; then
-  #curl --fail --silent --show-error --location --header "Accept: application/octet-stream" --user "jeremylevy:${GITHUB_TOKEN}" https://api.github.com/repos/yolo-sh/agent/releases/assets/76468227 --output "${YOLO_AGENT_PATH}"
-  rm --recursive --force "${YOLO_AGENT_TMP_ARCHIVE_PATH}"
-  curl --fail --silent --show-error --location --header "Accept: application/octet-stream" "https://github.com/yolo-sh/agent/releases/download/v${YOLO_AGENT_VERSION}/agent_${YOLO_AGENT_VERSION}_linux_${INSTANCE_ARCH}.tar.gz" --output "${YOLO_AGENT_TMP_ARCHIVE_PATH}"
-  tar --directory "${YOLO_AGENT_DIR}" --extract --file "${YOLO_AGENT_TMP_ARCHIVE_PATH}"
-  rm --recursive --force "${YOLO_AGENT_TMP_ARCHIVE_PATH}"
+  curl --fail --silent --show-error --location --header "Accept: application/octet-stream" https://api.github.com/repos/yolo-sh/agent/releases/assets/77939680 --output "${YOLO_AGENT_PATH}"
+  # rm --recursive --force "${YOLO_AGENT_TMP_ARCHIVE_PATH}"
+  # curl --fail --silent --show-error --location --header "Accept: application/octet-stream" "https://github.com/yolo-sh/agent/releases/download/v${YOLO_AGENT_VERSION}/agent_${YOLO_AGENT_VERSION}_linux_${INSTANCE_ARCH}.tar.gz" --output "${YOLO_AGENT_TMP_ARCHIVE_PATH}"
+  # tar --directory "${YOLO_AGENT_DIR}" --extract --file "${YOLO_AGENT_TMP_ARCHIVE_PATH}"
+  # rm --recursive --force "${YOLO_AGENT_TMP_ARCHIVE_PATH}"
 fi
 
 chmod +x "${YOLO_AGENT_PATH}"
@@ -167,7 +172,7 @@ chmod +x "${YOLO_AGENT_PATH}"
 if [[ ! -f "/etc/systemd/system/${YOLO_AGENT_SYSTEMD_SERVICE_NAME}" ]]; then
   tee /etc/systemd/system/"${YOLO_AGENT_SYSTEMD_SERVICE_NAME}" > /dev/null << EOF
   [Unit]
-  Description=This agent is used to establish connection with the Yolo CLI.
+  Description=The agent used to establish connection with the Yolo CLI.
 
   [Service]
   Type=simple

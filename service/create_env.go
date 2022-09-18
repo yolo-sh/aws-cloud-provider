@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -73,6 +74,17 @@ func (a *AWS) CreateEnv(
 			"The security group attached to your environment",
 			clusterInfra.VPC.ID,
 			[]types.IpPermission{
+				{
+					IpProtocol: aws.String("tcp"),
+					FromPort:   aws.Int32(infrastructure.InstanceSSHPort),
+					ToPort:     aws.Int32(infrastructure.InstanceSSHPort),
+					IpRanges: []types.IpRange{
+						{
+							CidrIp: aws.String("0.0.0.0/0"),
+						},
+					},
+				},
+
 				{
 					IpProtocol: aws.String("tcp"),
 					FromPort:   aws.Int32(int32(yoloSSHServerListenPort)),
@@ -274,10 +286,10 @@ func (a *AWS) CreateEnv(
 
 		initScriptResults, err := infrastructure.LookupInitInstanceScriptResults(
 			ec2Client,
-			envInfra.Instance.TmpPublicIPAddress,
-			constants.SSHServerListenPort,
-			entities.EnvRootUser,
-			envInfra.KeyPair.PEMContent,
+			infra.Instance.TmpPublicIPAddress,
+			fmt.Sprintf("%d", infrastructure.InstanceSSHPort),
+			infrastructure.InstanceRootUser,
+			infra.KeyPair.PEMContent,
 		)
 
 		if err != nil {

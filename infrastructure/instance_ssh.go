@@ -12,9 +12,15 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
+const (
+	InstanceSSHPort  = 22
+	InstanceRootUser = "ubuntu"
+)
+
 type RawInitInstanceScriptResults struct {
-	ExitCode    string `json:"exit_code"`
-	SSHHostKeys string `json:"ssh_host_keys"`
+	ExitCode      string `json:"exit_code"`
+	SSHHostKeys   string `json:"ssh_host_keys"`
+	CloudInitLogs string `json:"cloud_init_logs"`
 }
 
 type InitInstanceScriptResults struct {
@@ -58,7 +64,7 @@ func LookupInitInstanceScriptResults(
 
 			if err != nil {
 				returnedError = fmt.Errorf(
-					"instance init script exited with invalid JSON (\"%s\") (\"%+v\")",
+					"instance cloud init script exited with invalid JSON (\"%s\") (\"%+v\")",
 					initScriptOutput,
 					err,
 				)
@@ -67,8 +73,9 @@ func LookupInitInstanceScriptResults(
 
 			if initScriptResults.ExitCode != "0" {
 				returnedError = fmt.Errorf(
-					"instance init script exited with code \"%s\"",
+					"instance cloud init script exited with code \"%s\".\n\n%s",
 					initScriptResults.ExitCode,
+					initScriptResults.CloudInitLogs,
 				)
 				return
 			}
@@ -79,7 +86,7 @@ func LookupInitInstanceScriptResults(
 
 			if err != nil {
 				returnedError = fmt.Errorf(
-					"instance init script exited with invalid SSH host keys (\"%s\") (\"%+v\")",
+					"instance cloud init script exited with invalid SSH host keys (\"%s\") (\"%+v\")",
 					initScriptResults.SSHHostKeys,
 					err,
 				)

@@ -33,7 +33,8 @@ constructExitJSONResponse () {
   JSON_RESPONSE=$(jq --null-input \
   --arg exitCode "${1}" \
   --arg sshHostKeys "${2}" \
-  '{"exit_code": $exitCode, "ssh_host_keys": $sshHostKeys}')
+  --arg cloudInitLogs "${3}" \
+  '{"exit_code": $exitCode, "ssh_host_keys": $sshHostKeys, "cloud_init_logs": $cloudInitLogs}')
 
   echo "${JSON_RESPONSE}"
 }
@@ -43,16 +44,17 @@ YOLO_INIT_RESULTS_FILE_PATH="/tmp/yolo-init-results"
 
 handleExit () {
   EXIT_CODE=$?
+  CLOUD_INIT_LOGS="$(cat /var/log/cloud-init-output.log)"
 
   rm --force "${YOLO_INIT_RESULTS_FILE_PATH}"
 
   log "\n\n"
   if [[ "${EXIT_CODE}" != 0 ]]; then
-    constructExitJSONResponse "${EXIT_CODE}" "" >> "${YOLO_INIT_RESULTS_FILE_PATH}"
+    constructExitJSONResponse "${EXIT_CODE}" "" "${CLOUD_INIT_LOGS}" >> "${YOLO_INIT_RESULTS_FILE_PATH}"
     log "---- Yolo instance init (failed) (exit code ${EXIT_CODE}) ----"
   else
     SSH_HOST_KEYS="$(cat "${YOLO_SSH_SERVER_HOST_KEY_FILE_PATH}")"
-    constructExitJSONResponse "${EXIT_CODE}" "${SSH_HOST_KEYS}" >> "${YOLO_INIT_RESULTS_FILE_PATH}"
+    constructExitJSONResponse "${EXIT_CODE}" "${SSH_HOST_KEYS}" "${CLOUD_INIT_LOGS}" >> "${YOLO_INIT_RESULTS_FILE_PATH}"
     
     log "---- Yolo instance init (success) ----"
   fi
@@ -61,7 +63,7 @@ handleExit () {
   exit "${EXIT_CODE}"
 }
 
-trap "handleExit" EXIT
+trap 'handleExit' EXIT
 
 # -- System configuration
 

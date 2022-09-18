@@ -80,8 +80,6 @@ In order to access your AWS account, the Yolo CLI will first look for credential
 
 - `AWS_SECRET_ACCESS_KEY`
 
-- `AWS_REGION`
-
 If not found, the configuration files created by the AWS CLI (via `aws configure`) will be used.
 
 #### --profile
@@ -94,7 +92,7 @@ yolo aws --profile production init yolo-sh/api
 
 **By default, Yolo will use the profile named `default`.**
 
-#### --region
+#### --region and AWS_REGION
 
 If you want to overwrite the region resolved by the Yolo CLI, you could use the `--region` flag:
 
@@ -105,6 +103,14 @@ yolo aws --region eu-west-3 init yolo-sh/api
 ```shell
 yolo aws --profile production --region eu-west-3 init yolo-sh/api
 ```
+
+or the `AWS_REGION` environment variable:
+
+```shell
+export AWS_REGION=eu-west-3
+```
+
+**The `--region` flag takes precedence over the `AWS_REGION` environment variable.**
 
 ### Permissions
 

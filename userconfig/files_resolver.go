@@ -65,17 +65,20 @@ type FilesResolverOpts struct {
 type FilesResolver struct {
 	opts          FilesResolverOpts
 	profileLoader ProfileLoader
+	envVars       EnvVarsGetter
 }
 
 // NewFilesResolver constructs the FilesResolver struct.
 func NewFilesResolver(
 	profileLoader ProfileLoader,
 	opts FilesResolverOpts,
+	envVars EnvVarsGetter,
 ) FilesResolver {
 
 	return FilesResolver{
 		profileLoader: profileLoader,
 		opts:          opts,
+		envVars:       envVars,
 	}
 }
 
@@ -147,6 +150,10 @@ func (f FilesResolver) resolveProfile() string {
 func (f FilesResolver) resolveRegion(regionInFile string) string {
 	if len(f.opts.Region) > 0 {
 		return f.opts.Region
+	}
+
+	if len(f.envVars.Get(AWSRegionEnvVar)) > 0 {
+		return f.envVars.Get(AWSRegionEnvVar)
 	}
 
 	return regionInFile

@@ -6,6 +6,8 @@ replace github.com/yolo-sh/yolo v0.0.0 => ../yolo
 
 replace github.com/yolo-sh/agent v0.0.0 => ../agent
 
+replace github.com/yolo-sh/agent-container v0.0.0 => ../agent-container
+
 require (
 	github.com/aws/aws-sdk-go-v2 v1.15.0
 	github.com/aws/aws-sdk-go-v2/config v1.13.1
@@ -36,6 +38,7 @@ require (
 	github.com/gosimple/slug v1.12.0 // indirect
 	github.com/gosimple/unidecode v1.0.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
+	github.com/yolo-sh/agent-container v0.0.0 // indirect
 	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 )

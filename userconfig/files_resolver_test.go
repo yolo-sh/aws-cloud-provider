@@ -17,6 +17,7 @@ func TestFilesResolving(t *testing.T) {
 		test                    string
 		configInFiles           *userconfig.Config
 		regionOpts              string
+		regionEnvVar            string
 		profileOpts             string
 		credentialsFilePathOpts string
 		configFilePathOpts      string
@@ -35,6 +36,23 @@ func TestFilesResolving(t *testing.T) {
 			test:           "valid with region option",
 			configInFiles:  userconfig.NewConfig("a", "b", "c"),
 			regionOpts:     "d",
+			expectedConfig: userconfig.NewConfig("a", "b", "d"),
+			expectedError:  nil,
+		},
+
+		{
+			test:           "valid with region sets as env var",
+			configInFiles:  userconfig.NewConfig("a", "b", "c"),
+			regionEnvVar:   "d",
+			expectedConfig: userconfig.NewConfig("a", "b", "d"),
+			expectedError:  nil,
+		},
+
+		{
+			test:           "valid with region sets as env var and option",
+			configInFiles:  userconfig.NewConfig("a", "b", "c"),
+			regionOpts:     "d",
+			regionEnvVar:   "e",
 			expectedConfig: userconfig.NewConfig("a", "b", "d"),
 			expectedError:  nil,
 		},
@@ -108,6 +126,13 @@ func TestFilesResolving(t *testing.T) {
 				Return(configAsReturnedByProfileLoader, tc.errorReturnedByLoader).
 				AnyTimes()
 
+			envVarsGetterMock := mocks.NewUserConfigEnvVarsGetter(mockCtrl)
+			envVarsGetterMock.
+				EXPECT().
+				Get(userconfig.AWSRegionEnvVar).
+				Return(tc.regionEnvVar).
+				AnyTimes()
+
 			resolver := userconfig.NewFilesResolver(
 				profileLoaderMock,
 				userconfig.FilesResolverOpts{
@@ -116,6 +141,7 @@ func TestFilesResolving(t *testing.T) {
 					CredentialsFilePath: tc.credentialsFilePathOpts,
 					ConfigFilePath:      tc.configFilePathOpts,
 				},
+				envVarsGetterMock,
 			)
 
 			resolvedConfig, err := resolver.Resolve()
